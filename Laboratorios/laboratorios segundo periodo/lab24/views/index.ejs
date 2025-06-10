@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mensajes</title>
+</head>
+<body>
+    <h1>Mensajes</h1>
+    <ul id="messageList">
+        <% messages.forEach(function(message) { %>
+            <li><%= message %></li>
+        <% }); %>
+    </ul>
+    <form id="messageForm">
+        <input type="text" id="messageInput" name="message" placeholder="Escribe un mensaje" required>
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+        document.getElementById('messageForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita el envío normal del formulario
+
+            const message = document.getElementById('messageInput').value;
+
+            fetch('/add-message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Añadir el nuevo mensaje a la lista
+                const messageList = document.getElementById('messageList');
+                const newMessage = document.createElement('li');
+                newMessage.textContent = data.message;
+                messageList.appendChild(newMessage);
+
+                // Limpiar el campo de entrada
+                document.getElementById('messageInput').value = '';
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
